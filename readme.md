@@ -2,7 +2,7 @@
 
 다운로드: [Download][downloadlink]
 
-[downloadlink]: https://drive.google.com/file/d/1BK_GtmOdie0oK_pDXjmkQABKQUEXjIWI/view?usp=sharing "Download"
+[downloadlink]: https://drive.google.com/file/d/1FZYR8_AvEzzkZIlJESZ17ltOi13aB671/view?usp=sharing "Download"
 
 /analyze [숫자; 분석할 청크 수] [true/false; 맵 파괴 여부]:
 
