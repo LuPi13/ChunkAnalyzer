@@ -1,4 +1,4 @@
-# RandomAbility
+# ChunkAnalyzer
 
 다운로드: [Download][downloadlink]
 
@@ -16,3 +16,5 @@
     /analyze remove all 입력 시, 예외 모두 제거
     config.yml 에서도 수정 가능
 
+
+너무 많이 하면 맵 폭발할 수도 있으니 조심
