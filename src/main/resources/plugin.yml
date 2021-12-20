@@ -1,0 +1,14 @@
+name: ChunkAnalyzer
+version: '${project.version}'
+main: yasking.lupi13.chunkanalyzer.ChunkAnalyzer
+api-version: 1.18
+authors: [ LuPi13 ]
+description: Analyzes Chunks
+website: https://github.com/LuPi13
+commands:
+  analyze:
+    description: Analyzes chunks
+    usage: /analyze [(int) number of chunk] [(boolean) destroy]
+  exception:
+    description: Adds exception blocks of destroy
+    usage: /exception [add/remove] [blockcode/all]
