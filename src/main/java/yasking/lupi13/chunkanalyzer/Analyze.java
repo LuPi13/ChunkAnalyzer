@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -41,6 +42,8 @@ public class Analyze implements CommandExecutor {
                         }
                         int cx = player.getLocation().getChunk().getX();
                         int cz = player.getLocation().getChunk().getZ();
+                        int cx2 = cx;
+                        int cz2 = cz;
 
                         List<Chunk> chunklist = new ArrayList<>(count);
                         for (int i = 1; i <= count; i++) {
@@ -94,14 +97,25 @@ public class Analyze implements CommandExecutor {
                                     }
                                 }
                                 timer[0] += 1;
+
                                 if (timer[0] >= count) {
+                                    List<Map.Entry<String, Integer>> countsort = new ArrayList<>(blockcount.entrySet());
+                                    Collections.sort(countsort, new Comparator<Map.Entry<String, Integer>>() {
+                                        @Override
+                                        public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                                            return o2.getValue().compareTo(o1.getValue());
+                                        }
+                                    });
+
                                     List<String> pages = new ArrayList<>();
                                     StringBuilder page = new StringBuilder();
+                                    pages.add(ChatColor.GOLD + "\n\n\nSorted by alphabetical order");
                                     int line = 1;
                                     for (String key : blockcount.keySet()) {
                                         if (line == blockcount.keySet().size()) {
                                             page.append(key.toLowerCase()).append(": ").append(blockcount.get(key)).append("\n");
                                             pages.add(page.toString());
+                                            page = new StringBuilder();
                                             break;
                                         }
                                         if (line % 14 != 0) {
@@ -115,15 +129,38 @@ public class Analyze implements CommandExecutor {
                                         line += 1;
                                     }
 
+                                    line = 1;
+                                    pages.add(ChatColor.GOLD + "\n\n\nSorted by the order of number");
+                                    for (Map.Entry<String, Integer> sorting : countsort) {
+                                        if (line == countsort.size()) {
+                                            page.append(sorting.getKey().toLowerCase()).append(": ").append(sorting.getValue()).append("\n");
+                                            pages.add(page.toString());
+                                            break;
+                                        }
+                                        if (line % 14 != 0) {
+                                            page.append(sorting.getKey().toLowerCase()).append(": ").append(sorting.getValue()).append("\n");
+                                        }
+                                        if (line % 14 == 0) {
+                                            page.append(sorting.getKey().toLowerCase()).append(": ").append(sorting.getValue()).append("\n");
+                                            pages.add(page.toString());
+                                            page = new StringBuilder();
+                                        }
+                                        line += 1;
+                                    }
+
                                     ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
                                     BookMeta meta = (BookMeta) book.getItemMeta();
                                     meta.setTitle(ChatColor.GREEN + "Analyze Result");
                                     meta.setAuthor(ChatColor.AQUA + "ChunkAnalyzer");
+                                    List<String> lore = new ArrayList<>();
+                                    lore.add(ChatColor.LIGHT_PURPLE + "(x: " + cx2 + ", z: " + cz2 + ", size: " + args[0] + ")");
+                                    meta.setLore(lore);
                                     meta.setPages(pages);
                                     book.setItemMeta(meta);
                                     player.getInventory().addItem(book);
                                     cancel();
                                 }
+
                             }
                         }.runTaskTimer(plugin, 0L, 1L);
                     }
