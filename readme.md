@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ChunkAnalyzer
 
 다운로드: [Download][downloadlink]
@@ -38,5 +37,4 @@
     config.yml 에서도 수정 가능
 
 
->>>>>>> ba147f57258895795b647ca38843f70e35862814
 너무 많이 하면 맵 폭발할 수도 있으니 조심
