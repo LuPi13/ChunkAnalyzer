@@ -1,7 +1,5 @@
 # ChunkAnalyzer
 
-다운로드: [Download][downloadlink]
-
 /analyze [숫자; 분석할 청크 수] [true/false; 맵 파괴 여부]:
 
     자신이 속한 청크를 중심으로 입력한 숫자만큼 청크의 블럭 개수 분석
