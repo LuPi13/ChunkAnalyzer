@@ -67,7 +67,8 @@ public class Analyze implements CommandExecutor {
                                 rotate += 1;
                             }
                         }
-                        Map<String, Integer> blockcount = new TreeMap<>();
+                        Map<String, Integer> BlockCount = new TreeMap<>();
+                        Map<Integer, Integer> EmphasizeCount = new TreeMap<>();
                         final int[] timer = {0};
                         new BukkitRunnable() {
                             @Override
@@ -79,11 +80,22 @@ public class Analyze implements CommandExecutor {
                                         for (int y = -64; y <=320; y++) {
                                             Block block = chunk.getBlock(x, y, z);
                                             if (!block.getType().isAir()) {
-                                                if (!blockcount.containsKey(block.getType().toString())) {
-                                                    blockcount.put(block.getType().toString(), 1);
+                                                if (!BlockCount.containsKey(block.getType().toString())) {
+                                                    BlockCount.put(block.getType().toString(), 1);
                                                 }
                                                 else {
-                                                    blockcount.put(block.getType().toString(), blockcount.get(block.getType().toString()) + 1);
+                                                    BlockCount.put(block.getType().toString(), BlockCount.get(block.getType().toString()) + 1);
+                                                }
+
+                                                if (plugin.getConfig().getString("emphasize") != null && BlockException.blocklist.contains(plugin.getConfig().getString("emphasize").toUpperCase())) {
+                                                    if (block.getType().toString().equalsIgnoreCase(plugin.getConfig().getString("emphasize"))) {
+                                                        if (EmphasizeCount.containsKey(y)) {
+                                                            EmphasizeCount.put(y, EmphasizeCount.get(y) + 1);
+                                                        }
+                                                        else {
+                                                            EmphasizeCount.put(y, 1);
+                                                        }
+                                                    }
                                                 }
 
                                                 if (toggle) {
@@ -99,8 +111,8 @@ public class Analyze implements CommandExecutor {
                                 timer[0] += 1;
 
                                 if (timer[0] >= count) {
-                                    List<Map.Entry<String, Integer>> countsort = new ArrayList<>(blockcount.entrySet());
-                                    Collections.sort(countsort, new Comparator<Map.Entry<String, Integer>>() {
+                                    List<Map.Entry<String, Integer>> CountSort = new ArrayList<>(BlockCount.entrySet());
+                                    Collections.sort(CountSort, new Comparator<Map.Entry<String, Integer>>() {
                                         @Override
                                         public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
                                             return o2.getValue().compareTo(o1.getValue());
@@ -109,20 +121,20 @@ public class Analyze implements CommandExecutor {
 
                                     List<String> pages = new ArrayList<>();
                                     StringBuilder page = new StringBuilder();
-                                    pages.add(ChatColor.GOLD + "\n\n\nSorted by alphabetical order");
+                                    pages.add(ChatColor.GOLD + "\n\n\nAlphabetical order");
                                     int line = 1;
-                                    for (String key : blockcount.keySet()) {
-                                        if (line == blockcount.keySet().size()) {
-                                            page.append(key.toLowerCase()).append(": ").append(blockcount.get(key)).append("\n");
+                                    for (String key : BlockCount.keySet()) {
+                                        if (line == BlockCount.keySet().size()) {
+                                            page.append(key.toLowerCase()).append(": ").append(BlockCount.get(key)).append("\n");
                                             pages.add(page.toString());
                                             page = new StringBuilder();
                                             break;
                                         }
                                         if (line % 14 != 0) {
-                                            page.append(key.toLowerCase()).append(": ").append(blockcount.get(key)).append("\n");
+                                            page.append(key.toLowerCase()).append(": ").append(BlockCount.get(key)).append("\n");
                                         }
                                         if (line % 14 == 0){
-                                            page.append(key.toLowerCase()).append(": ").append(blockcount.get(key)).append("\n");
+                                            page.append(key.toLowerCase()).append(": ").append(BlockCount.get(key)).append("\n");
                                             pages.add(page.toString());
                                             page = new StringBuilder();
                                         }
@@ -130,11 +142,12 @@ public class Analyze implements CommandExecutor {
                                     }
 
                                     line = 1;
-                                    pages.add(ChatColor.GOLD + "\n\n\nSorted by the order of number");
-                                    for (Map.Entry<String, Integer> sorting : countsort) {
-                                        if (line == countsort.size()) {
+                                    pages.add(ChatColor.GOLD + "\n\n\nNumerical order");
+                                    for (Map.Entry<String, Integer> sorting : CountSort) {
+                                        if (line == CountSort.size()) {
                                             page.append(sorting.getKey().toLowerCase()).append(": ").append(sorting.getValue()).append("\n");
                                             pages.add(page.toString());
+                                            page =new StringBuilder();
                                             break;
                                         }
                                         if (line % 14 != 0) {
@@ -147,6 +160,29 @@ public class Analyze implements CommandExecutor {
                                         }
                                         line += 1;
                                     }
+                                    if (plugin.getConfig().getString("emphasize") != null && BlockException.blocklist.contains(plugin.getConfig().getString("emphasize").toUpperCase())) {
+                                        //Object[] mapkey = EmphasizeCount.keySet().toArray();
+                                        //Arrays.sort(mapkey);
+                                        //List<Map.Entry<Integer, Integer>> EmphasizeSort = new ArrayList<>(EmphasizeCount.entrySet());
+                                        line = 1;
+                                        pages.add(ChatColor.GOLD + "\n\n\nEmphasized Block\n    " + ChatColor.AQUA + plugin.getConfig().getString("emphasize"));
+                                        for (Integer key : EmphasizeCount.keySet()) {
+                                            if (line == EmphasizeCount.size()) {
+                                                page.append(key).append(": ").append(EmphasizeCount.get(key)).append("\n");
+                                                pages.add(page.toString());
+                                                break;
+                                            }
+                                            if (line % 14 != 0) {
+                                                page.append(key).append(": ").append(EmphasizeCount.get(key)).append("\n");
+                                            }
+                                            if (line % 14 == 0) {
+                                                page.append(key).append(": ").append(EmphasizeCount.get(key)).append("\n");
+                                                pages.add(page.toString());
+                                                page = new StringBuilder();
+                                            }
+                                            line += 1;
+                                        }
+                                    }
 
                                     ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
                                     BookMeta meta = (BookMeta) book.getItemMeta();
@@ -154,6 +190,9 @@ public class Analyze implements CommandExecutor {
                                     meta.setAuthor(ChatColor.AQUA + "ChunkAnalyzer");
                                     List<String> lore = new ArrayList<>();
                                     lore.add(ChatColor.LIGHT_PURPLE + "(x: " + cx2 + ", z: " + cz2 + ", size: " + args[0] + ")");
+                                    if (plugin.getConfig().getString("emphasize") != null && BlockException.blocklist.contains(plugin.getConfig().getString("emphasize").toUpperCase())) {
+                                        lore.add(ChatColor.GOLD + "Emphasized " + plugin.getConfig().getString("emphasize"));
+                                    }
                                     meta.setLore(lore);
                                     meta.setPages(pages);
                                     book.setItemMeta(meta);

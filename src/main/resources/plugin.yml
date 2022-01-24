@@ -12,3 +12,6 @@ commands:
   exception:
     description: Adds exception blocks of destroy
     usage: /exception [add/remove] [blockcode/all]
+  emphasize:
+    description: Adds block that will analyzed by Y coordinates
+    usage: /emphasize [blockcode/remove]

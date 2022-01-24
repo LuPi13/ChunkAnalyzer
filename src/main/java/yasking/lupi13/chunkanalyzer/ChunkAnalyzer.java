@@ -13,9 +13,12 @@ public final class ChunkAnalyzer extends JavaPlugin {
         getCommand("analyze").setTabCompleter(new AnalyzeTab());
         getCommand("exception").setExecutor(new BlockException(this));
         getCommand("exception").setTabCompleter(new ExceptionTab());
+        getCommand("emphasize").setExecutor(new Emphasize(this));
+        getCommand("emphasize").setTabCompleter(new EmphasizeTab());
         BlockException.createBlockList();
         AnalyzeTab.makeAnalyzeTab();
         ExceptionTab.makeExceptionTab();
+        EmphasizeTab.makeEmphasizeTab();
 
         System.out.println("Chunk Analyzer started.");
     }
